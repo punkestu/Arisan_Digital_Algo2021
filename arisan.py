@@ -24,7 +24,7 @@ def write(fileP, data, verbose = False): #fungsi untuk menulis data ke file deng
 def header(): #fungsi untuk menampilkan header program
     print("ARISAN DIGITAL".center(100," ")) #menampilkan string biasa namun dengan center 100
     print("build with python3".center(100," ")) #sama
-    print("oleh : Bima & Stefani".center(100," ") #)sama
+    print("oleh : Bima & Stefani".center(100," ")) #sama
     print("=============================".center(100," ")) #sama
 
 def menu(): #untuk menampilkan menu utama
@@ -151,68 +151,65 @@ def removePeserta(data): #untuk meremove peserta
     tabelPeserta(data) #menampilkan tabel peserta
     nama = input((" "*35)+" Masukan nama: ") #input nama peserta yang ingin diremove
     if nama in data["peserta"]: #jika nama termasuk dalam peserta
-        if input((" "*35)+"apakah anda yakin akan remove?[y/n]: ") == "y":
-            data["peserta"].remove(nama)
-            if nama in data["bayar"]: data["bayar"].remove(nama)
-            if nama in data["dapat"]: data["dapat"].remove(nama)
-            log.append({"time":dt.now().strftime("%d/%m/%Y %H:%M:%S"),"command":"remove","value":nama})
-            if len(data["peserta"])>data["minPeserta"]:
-                data["target"] = len(data["peserta"])*data["iuran"]
-                log.append({"time":dt.now().strftime("%d/%m/%Y %H:%M:%S"),"command":"target","value":data["target"]})
-            else:
+        if input((" "*35)+"apakah anda yakin akan remove?[y/n]: ") == "y": #konfirmasi jika setuju maka lanjut kebawah
+            data["peserta"].remove(nama) #hapus peserta tersebut dari data
+            if nama in data["bayar"]: data["bayar"].remove(nama) #hapus juga jika sudah membayar
+            if nama in data["dapat"]: data["dapat"].remove(nama) #hapus juga jika sudah dapat
+            if len(data["peserta"])>data["minPeserta"]: #cek apakah jumlah peserta masih lebih besar dari minimal peserta
+                data["target"] = len(data["peserta"])*data["iuran"] #ubah target sesuai dengan jumlah peserta terbaru
+            else: #jika tidak
                 target = data["minPeserta"]*data["iuran"]
-                if(data["target"]!=target):
-                    data["target"] = target
-                    log.append({"time":dt.now().strftime("%d/%m/%Y %H:%M:%S"),"command":"target","value":target})
-    else:
-        print("peserta tidak ditemukan".center(100," "))
-        input((" "*35)+"tekan enter untuk lanjut...")
-    write(DBPATH, data, True)
-    write(LOGBOOK, log)
-    return data, log   
+                if(data["target"]!=target): #cek apakah target terahir berbeda dengan target minimal
+                    data["target"] = target #kembalikan target menjadi target minimal
+    else: #jika tidak dalam peserta
+        print("peserta tidak ditemukan".center(100," ")) #info
+        input((" "*35)+"tekan enter untuk lanjut...") #tunggu input
+    write(DBPATH, data, True) #tulis data terbaru ke database
+    return data #ekspos data ke luar
     
-def summaryPeserta(data):
-    header()
-    print("=======SUMMARY PESERTA=======".center(100," "))
-    tabelPeserta(data)
-    input((" "*35)+"tekan enter untuk lanjut...")
+def summaryPeserta(data): #tampilkan rangkuman data peserta
+    header() #tampilkan header
+    print("=======SUMMARY PESERTA=======".center(100," ")) #label
+    tabelPeserta(data) #tampilkan tabel peserta
+    input((" "*35)+"tekan enter untuk lanjut...") #tunggu input
 
-def printInfoArisan(data):
-    header()
-    print("=========INFO ARISAN=========".center(100," "))
-    print((" "*35)+"  Target arisan   : Rp.",data["target"])
-    print((" "*35)+"  Iuran arisan    : Rp.",data["iuran"])
-    print((" "*35)+"  Minimal Peserta :",data["minPeserta"])
-    print((" "*35)+"  Total Peserta   :",len(data["peserta"]))
-    print((" "*35)+"  -> Sudah bayar  :",len(data["bayar"]))
-    print((" "*35)+"  -> Sudah dapat  :",len(data["dapat"]))
-    print("=============================".center(100," "))
-    print()
-    input((" "*35)+"tekan enter untuk lanjut...")
+def printInfoArisan(data): #tampilkan info tentang arisan
+    header() #tampilkan header
+    print("=========INFO ARISAN=========".center(100," ")) #label
+    print((" "*35)+"  Target arisan   : Rp.",data["target"]) #tampilkan target arisan
+    print((" "*35)+"  Iuran arisan    : Rp.",data["iuran"]) #tampilkan iuran peserta
+    print((" "*35)+"  Minimal Peserta :",data["minPeserta"]) #tampilkan minimal peserta
+    print((" "*35)+"  Total Peserta   :",len(data["peserta"])) #tampilkan total peserta
+    print((" "*35)+"  -> Sudah bayar  :",len(data["bayar"])) #tampilkan total peserta yang sudah bayar
+    print((" "*35)+"  -> Sudah dapat  :",len(data["dapat"])) #tampilkan total peserta yang sudah dapat
+    print("=============================".center(100," ")) #separator
+    print() #enter
+    input((" "*35)+"tekan enter untuk lanjut...") #tunggu input
 
-def resetArisan(data, log):
-    while True:
-        os.system("clear")
-        header()
-        print("========RESET ARISAN=========".center(100," "))
-        target = input((" "*35)+"  Masukan target arisan   : ")
-        if not target.isnumeric():
+def resetArisan(data): #mengatur ulang semua atribut arisan (target, minimal peserta, dan iuran peserta) serta menghapus semua data peserta
+    while True: #loop
+        os.system("cls") #bersihkan layar
+        header() #tampilkan header
+        print("========RESET ARISAN=========".center(100," ")) #label
+        target = input((" "*35)+"  Masukan target arisan   : ") #input target
+        if not target.isnumeric(): #target harus berbentuk angka
             print((" "*35)+"Harap masukan data Integer saja")
             input((" "*35)+"tekan enter untuk ulang...")
             continue
-        target = int(target)
-        minPes = input((" "*35)+"  Masukan minimal peserta : ")
-        if not minPes.isnumeric():
+        target = int(target) #cast target menjadi integer
+        minPes = input((" "*35)+"  Masukan minimal peserta : ") #input minimal peserta
+        if not minPes.isnumeric(): #minimal peserta harus berbentuk angka
             print((" "*35)+"Harap masukan data Integer saja")
             input((" "*35)+"tekan enter untuk ulang...")
             continue
-        minPes = int(minPes)
-        if minPes<2:
+        minPes = int(minPes) #cast minimal peserta jadi integer
+        if minPes<2: #jika minimal peserta kurang dari 2 maka ulangi
             print((" "*35)+"Minimal peserta untuk arisan harus >= 2")
             input((" "*35)+"tekan enter untuk ulang...")
             continue
-        opsi = input((" "*35)+"Anda yakin akan reset arisan?[y/n/ulang]:")
-        if opsi =="y":
+        opsi = input((" "*35)+"Anda yakin akan reset arisan?[y/n/ulang]:") #konfirmasi semua input
+        if opsi =="y": #jika setuju
+            #rubah semua data
             data["minPeserta"] = minPes
             data["target"] = target
             data["iuran"] = target/minPes
@@ -220,26 +217,16 @@ def resetArisan(data, log):
             data["bayar"] = []
             data["dapat"] = []
             data["riwayat"] = []
-            log.append({"time":dt.now().strftime("%d/%m/%Y %H:%M:%S"),"command":"reset","value":{
-                "minPeserta":minPes,
-                "target":target,
-                "iuran":target/minPes,
-                "peserta":[],
-                "bayar":[],
-                "dapat":[],
-                "riwayat":[]
-            }})
-        elif opsi == "ulang" or opsi == "u":
+        elif opsi == "ulang" or opsi == "u": #jika ingin isi ulang
             continue
         break
-    write(DBPATH, data, True)
-    write(LOGBOOK, log)
-    return data, log
+    write(DBPATH, data, True) #tulis data kedalam database
+    return data #ekspos data terbaru keluar
 
-
-def help():
-    header()
-    print("====================HELP=====================".center(100," "))
+def help(): #untuk menampilkan menu bantuan
+    header() #tampilkan header
+    print("====================HELP=====================".center(100," ")) #label
+    #semua bantuan
     print("[1] Undi Arisan                                                       ".center(100," "))
     print("    Untuk mengundi peserta yang akan mendapatkan arisan dengan syarat:".center(100," "))
     print("    1. Jumlah peserta arisan memenuhi batas minimal peserta arisan    ".center(100," "))
@@ -278,36 +265,34 @@ def help():
     print("    Untuk menutup aplikasi                                            ".center(100," "))
     input((" "*35)+"tekan enter untuk lanjut...")
 
-def main():
-    data = read(DBPATH)
-    log = read(LOGBOOK)
-    while True:
-        os.system("clear")
-        opsi = menu()
-        os.system("clear")
-        if opsi == "1":
-            data,log = undiPeserta(data, log)
-        elif opsi == "2":
-            data,log = formBayar(data, log)
-        elif opsi == "3":
-            data,log = tambahPeserta(data, log)
-        elif opsi == "4":
-            data,log = removePeserta(data, log)
-        elif opsi == "5":
-            summaryPeserta(data)
-        elif opsi == "6":
-            listKwitansi(data)
-        elif opsi == "i":
-            printInfoArisan(data)
-        elif opsi == "r":
-            data,log = resetArisan(data, log)
-        elif opsi == "?":
-            help()
-        elif opsi == "x":
-            break
-    write(DBPATH, data, True)
-    write(LOGBOOK, log)
-    os.system("clear")
+def main(): #fungsi utama
+    data = read(DBPATH) #baca database dan simpan kedalam variabel data
+    while True: #loop
+        os.system("cls") #bersihkan layar
+        opsi = menu() #tampilkan menu utama dan masukkan hasil kedalam variabel opsi
+        os.system("cls") #bersihkan layar
+        if opsi == "1": #jika memilih opsi 1
+            data = undiPeserta(data) #undi peserta dan masukan hasil kedalam variabel data
+        elif opsi == "2": #jika memilih opsi 2
+            data = formBayar(data) #panggil form pembayaran dan simpan hasilnya kedalam variabel data
+        elif opsi == "3": #jika memilih opsi 3
+            data = tambahPeserta(data) #panggil form tambah peserta dan simpan hasilnya kedalam variabel data
+        elif opsi == "4": #jika memilih opsi 4
+            data = removePeserta(data) #panggil form remove peserta dan simpan hasilnya kedalam variabel data
+        elif opsi == "5": #jika memilih opsi 5
+            summaryPeserta(data) #tampilkan summary data peserta
+        elif opsi == "6": #jika memilih opsi 6
+            listKwitansi(data) #tampilkan list bukti pembayaran
+        elif opsi == "i": #jika memilih opsi i
+            printInfoArisan(data) #tampilkan informasi tentang arisan
+        elif opsi == "r": #jika memilih opsi r
+            data = resetArisan(data) #tampilkan form reset arisan
+        elif opsi == "?": #jika memilih opsi ?
+            help() #tampilkan menu halaman
+        elif opsi == "x": #jika memilih opsi x
+            break #hentikan loop
+    write(DBPATH, data, True) #tulis data kedalam database
+    os.system("cls") #bersihkan layar
     print(":)bye")
     
-main()
+main() #panggil fungsi utama
