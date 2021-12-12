@@ -103,7 +103,7 @@ def listKwitansi(data): #tampilkan daftar riwayat pembayaran
     print() #enter tambahan
     input((" "*35)+"tekan enter untuk lanjut...") #tunggu input untuk lanjut
     
-def formBayar(data, log): #menampilkan form pembayaran
+def formBayar(data): #menampilkan form pembayaran
     header() #panggil header
     print("=======FORM PEMBAYARAN=======".center(100," ")) #label
     tabelPeserta(data) #tampilkan tabel peserta
@@ -123,7 +123,7 @@ def formBayar(data, log): #menampilkan form pembayaran
 
 def tambahPeserta(data): #untuk menambahkan peserta
     while True: #lakukan loop
-        os.system("cls") #bersihkan layar
+        os.system("clear") #bersihkan layar
         header() #panggil header
         print("========TAMBAH PESERTA=======".center(100," ")) #label
         nama = input((" "*35)+" Masukan nama: ") #inputkan nama yg ingin ditambahkan
@@ -188,7 +188,7 @@ def printInfoArisan(data): #tampilkan info tentang arisan
 
 def resetArisan(data): #mengatur ulang semua atribut arisan (target, minimal peserta, dan iuran peserta) serta menghapus semua data peserta
     while True: #loop
-        os.system("cls") #bersihkan layar
+        os.system("clear") #bersihkan layar
         header() #tampilkan header
         print("========RESET ARISAN=========".center(100," ")) #label
         target = input((" "*35)+"  Masukan target arisan   : ") #input target
@@ -268,9 +268,9 @@ def help(): #untuk menampilkan menu bantuan
 def main(): #fungsi utama
     data = read(DBPATH) #baca database dan simpan kedalam variabel data
     while True: #loop
-        os.system("cls") #bersihkan layar
+        os.system("clear") #bersihkan layar
         opsi = menu() #tampilkan menu utama dan masukkan hasil kedalam variabel opsi
-        os.system("cls") #bersihkan layar
+        os.system("clear") #bersihkan layar
         if opsi == "1": #jika memilih opsi 1
             data = undiPeserta(data) #undi peserta dan masukan hasil kedalam variabel data
         elif opsi == "2": #jika memilih opsi 2
@@ -292,7 +292,7 @@ def main(): #fungsi utama
         elif opsi == "x": #jika memilih opsi x
             break #hentikan loop
     write(DBPATH, data, True) #tulis data kedalam database
-    os.system("cls") #bersihkan layar
+    os.system("clear") #bersihkan layar
     print(":)bye")
     
 main() #panggil fungsi utama
